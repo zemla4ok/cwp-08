@@ -11,10 +11,11 @@ const server = net.createServer((client) => {
 
     client.on('data', (data, err) => {
         let req = JSON.parse(data);
-        if (req.key === 'worker'){
+        if (req.key === 'worker' && req.method !== undefined){
             switch(req.method){
                 case 'start':
-                {
+                if(req.interval !== undefined){
+                    let interval = req.interval;
                     let id = getUniqID();
                     let file = `./files/${id}.json`;
                     let worker = childProcess.spawn('node', ['worker.js', file, `${interval}`]);
@@ -24,6 +25,13 @@ const server = net.createServer((client) => {
                     worker.file = file;
                     workers.push(worker);
                 }
+                    break;
+                case 'get' :
+                    client.write(JSON.stringify(workers));
+                break;
+                case 'remove' :
+                    
+                break;
             }
         }
     });
