@@ -18,11 +18,12 @@ const server = net.createServer((client) => {
                     let interval = req.interval;
                     let id = getUniqID();
                     let file = `./files/${id}.json`;
-                    let worker = childProcess.spawn('node', ['worker.js', file, `${interval}`]);
-                    let date = new Date();
-                    worker.id = id;
-                    worker.startedOn = date.toISOString();
-                    worker.file = file;
+                    let proc = childProcess.spawn('node', ['worker.js', file, interval], {detached: true});
+                    let worker = {
+                        proc : proc,
+                        id : id,
+                        statedOn : Date.now()
+                    };
                     workers.push(worker);
                 }
                     break;
@@ -30,7 +31,11 @@ const server = net.createServer((client) => {
                     client.write(JSON.stringify(workers));
                 break;
                 case 'remove' :
-                    
+                if(req.id !== undefined){
+                    let id = parseInt(req.id);
+                    let client = clients.get(id);
+                    process.kill(client.proc);
+                }
                 break;
             }
         }
