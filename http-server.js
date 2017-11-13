@@ -6,10 +6,22 @@ const hostname = '127.0.0.1';
 const port = 3000;
 
 const handlers = {
-   
+   '/workers' : workers,
+   '/workers/add' : add,
+   '/workers/remove' : remove
 }
 
+function workers(req, res, payload, cb){
 
+}
+
+function add(req, res, payload, cb){
+    
+}
+
+function remove(req, res, payload, cb){
+
+}
 
 const server = http.createServer((req, res) => {
     parseBodyJson(req, (err, payload) => {
