@@ -24,7 +24,13 @@ const server = net.createServer((client) => {
                         id : id,
                         statedOn : Date.now()
                     };
-                    workers.push(worker);
+                    workers.push(worker);                       
+                    let res = {
+                        id : worker.id,
+                        staredOn : worker.statedOn
+                    }
+                    console.log(res);
+                    client.write(JSON.stringify(res));
                 }
                     break;
                 case 'get' :
