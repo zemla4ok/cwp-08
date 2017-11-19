@@ -12,20 +12,26 @@ const handlers = {
 };
 
 function workers(req, res, payload, cb){
-
+    let request = {
+        key : 'worker',
+        method : 'get'
+    }
+    connection.write(JSON.stringify(request));
+   
 }
 
 function add(req, res, payload, cb){
     if(payload.x !== undefined){
-        let req = { 
+        let request = { 
             key : 'worker', 
             method : 'start', 
             interval : payload.x}
-        connection.write(JSON.stringify(req));
+        connection.write(JSON.stringify(request));
         connection.on('data', (data, err) =>{
-            if(!err){
+            let d = JSON.parse(data);
+            if(d.meta = 'add'){
                 console.log(JSON.parse(data));
-                cb(null, JSON.stringify(JSON.parse(data)));
+                cb(null, JSON.stringify(d));
             }
         })
     }
@@ -35,7 +41,21 @@ function add(req, res, payload, cb){
 }
 
 function remove(req, res, payload, cb){
-    
+    if(payload.id !== undefined){
+        let request = {
+            key : 'worker',
+            method : 'remove',
+            id : payload.id
+        }
+        connection.write(JSON.stringify(request));
+        connection.on('data', (data, err) => {
+            let d = JSON.parse(data);
+            if(d.meta === 'remove'){
+                console.log(d);
+                cb(null, JSON.stringify(d));
+            }
+        })
+    }
 }
 
 connection.connect(tcp_port, function () {
@@ -62,6 +82,7 @@ server.listen(port, hostname, () => {
 });
 
 function getHandler(url) {
+    console.log(url);
     return handlers[url] || notFound;
 }
 
