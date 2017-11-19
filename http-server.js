@@ -17,7 +17,12 @@ function workers(req, res, payload, cb){
         method : 'get'
     }
     connection.write(JSON.stringify(request));
-   
+   connection.on('data', (data) => {
+        let d = JSON.parse(data);
+        if(d.meta === 'get'){
+            cb(null, JSON.stringify(d));
+        }
+   })
 }
 
 function add(req, res, payload, cb){
@@ -30,7 +35,6 @@ function add(req, res, payload, cb){
         connection.on('data', (data, err) =>{
             let d = JSON.parse(data);
             if(d.meta = 'add'){
-                console.log(JSON.parse(data));
                 cb(null, JSON.stringify(d));
             }
         })
@@ -51,7 +55,6 @@ function remove(req, res, payload, cb){
         connection.on('data', (data, err) => {
             let d = JSON.parse(data);
             if(d.meta === 'remove'){
-                console.log(d);
                 cb(null, JSON.stringify(d));
             }
         })

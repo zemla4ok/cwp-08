@@ -38,7 +38,21 @@ const server = net.createServer((client) => {
                 }
                     break;
                 case 'get' :
-                    
+                let w = [];
+                for(let i = 0; i < workers.length; i++){
+                    let numb = fs.readFileSync(workers[i].file);
+                    let obj = {
+                        id : workers[i].id,
+                        startedOn : workers[i].startedOn,
+                        numbers : numb
+                    }
+                    w.push(obj);
+                }
+                let res = {
+                    meta: 'get',
+                    workers : w
+                }                
+                client.write(JSON.stringify(res));
                 break;
                 case 'remove' :
                 if(req.id !== undefined){
@@ -74,7 +88,7 @@ async function getWorkers() {
         }
         resolve(res);
     })
-}*/
+}
 
 function getNumbers(worker){
     return new Promise((resolve, reject) => {
@@ -88,7 +102,7 @@ function getNumbers(worker){
         })
     })
 }
-
+*/
     client.on('end', () => {
         console.log(`Client ${client.id} disconnected`);
     });
