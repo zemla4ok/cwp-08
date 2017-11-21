@@ -4,6 +4,7 @@ const hostname = '127.0.0.1';
 const port = 3000;
 const tcp_port = 8124;
 const connection = new net.Socket();
+const buf = require('buffer');
 
 const handlers = {
     '/workers': workers,
@@ -20,7 +21,11 @@ function workers(req, res, payload, cb){
    connection.on('data', (data) => {
         let d = JSON.parse(data);
         if(d.meta === 'get'){
-            cb(null, JSON.stringify(d));
+            d.workers.forEach((element) =>{
+                let b = new Buffer(element.numbers);
+                element.numbers = b.toString();
+            })
+            cb(null, d);
         }
    })
 }
@@ -35,7 +40,7 @@ function add(req, res, payload, cb){
         connection.on('data', (data, err) =>{
             let d = JSON.parse(data);
             if(d.meta = 'add'){
-                cb(null, JSON.stringify(d));
+                cb(null, d);
             }
         })
     }
@@ -55,7 +60,13 @@ function remove(req, res, payload, cb){
         connection.on('data', (data, err) => {
             let d = JSON.parse(data);
             if(d.meta === 'remove'){
-                cb(null, JSON.stringify(d));
+                let b = new Buffer(d.numbers);
+                let resp = {
+                    id: d.id,
+                    startedOn: d.startedOn,
+                    numbers: b.toString()
+                }
+                cb(null, resp);
             }
         })
     }
